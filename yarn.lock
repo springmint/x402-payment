@@ -199,7 +199,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@springmint/x402-payment@workspace:."
   dependencies:
-    "@springmint/x402": "npm:^0.1.1"
+    "@springmint/x402": "npm:^0.1.2"
     "@types/node": "npm:^25.3.5"
     "@vercel/ncc": "npm:^0.38.4"
     tronweb: "npm:^6.0.0"
@@ -210,13 +210,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@springmint/x402@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@springmint/x402@npm:0.1.1"
+"@springmint/x402@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@springmint/x402@npm:0.1.2"
   peerDependencies:
     tronweb: ^5.0.0 || ^6.0.0
     viem: ^2.46.3
-  checksum: 10c0/5ba180442187fd7570a86a0e9ca3cf3214526ee208d93669dca034cb0b1b31a5c8996be7c369e764f29cfd6e3f55705261da3a77798b615c59132bd4e947c8b7
+  checksum: 10c0/0ccbb4a0fb32dfbe0430c33c3cde8e83b082b63c57f1e4adb5c8d40de18a949d743f32a49bda45548507b1d8f352bf5499fd0559a9eba293c620d016f6eb260b
   languageName: node
   linkType: hard
 

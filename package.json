@@ -1,0 +1,61 @@
+{
+  "name": "@springmint/x402-payment",
+  "version": "1.0.0",
+  "description": "x402 payment SDK - Add x402 pay-per-use capability to your AI agent skills and Node.js applications",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    }
+  },
+  "bin": "dist/cli/x402_invoke.js",
+  "files": [
+    "dist/lib",
+    "dist/cli",
+    "SKILL.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc && ncc build src/cli.ts -o dist/cli && mv dist/cli/index.js dist/cli/x402_invoke.js",
+    "build:lib": "tsc",
+    "build:cli": "ncc build src/cli.ts -o dist/cli && mv dist/cli/index.js dist/cli/x402_invoke.js",
+    "start": "node dist/cli/x402_invoke.js"
+  },
+  "keywords": [
+    "x402",
+    "payment",
+    "ai-agent",
+    "skill",
+    "sdk",
+    "usdt",
+    "usdc",
+    "tron",
+    "evm",
+    "bsc",
+    "402",
+    "pay-per-use"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/springmint/x402-payment.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "@vercel/ncc": "^0.38.4",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@springmint/x402": "^0.1.1",
+    "tronweb": "^6.0.0",
+    "viem": "^2.46.3"
+  }
+}

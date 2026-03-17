@@ -54,7 +54,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@springmint/x402": "^0.1.1",
+    "@springmint/x402": "^0.1.2",
     "tronweb": "^6.0.0",
     "viem": "^2.46.3"
   }

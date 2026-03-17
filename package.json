@@ -1,6 +1,6 @@
 {
   "name": "@springmint/x402-payment",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "x402 payment SDK - Add x402 pay-per-use capability to your AI agent skills and Node.js applications",
   "license": "MIT",
   "type": "module",

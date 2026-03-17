@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import { findPrivateKey, findApiKey } from "./config.js";
-import { createX402FetchClient } from "./client.js";
+import { createX402FetchClient, checkAllowance, approveToken } from "./client.js";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -44,6 +44,54 @@ async function main() {
     }
     if (!tronKey && !evmKey) {
       console.error("[WARN] No private keys found. Configure TRON_PRIVATE_KEY or EVM_PRIVATE_KEY.");
+    }
+    process.exit(0);
+  }
+
+  // --allowance --token <address> --network <network> [--type evm|tron]
+  if (options.allowance === "true") {
+    const token = options.token;
+    const network = options.network;
+    const type = (options.type || "evm") as "tron" | "evm";
+    if (!token || !network) {
+      console.error("Error: --allowance requires --token and --network");
+      process.exit(1);
+    }
+    try {
+      const allowance = await checkAllowance(type, token, network, {
+        tronPrivateKey: tronKey,
+        evmPrivateKey: evmKey,
+        tronGridApiKey: apiKey,
+      });
+      process.stdout.write(JSON.stringify({ allowance: allowance.toString() }, null, 2) + "\n");
+    } catch (e: any) {
+      console.error(`[x402] Error: ${e.message}`);
+      process.exit(1);
+    }
+    process.exit(0);
+  }
+
+  // --approve --token <address> --network <network> [--type evm|tron]
+  if (options.approve === "true") {
+    const token = options.token;
+    const network = options.network;
+    const type = (options.type || "evm") as "tron" | "evm";
+    if (!token || !network) {
+      console.error("Error: --approve requires --token and --network");
+      process.exit(1);
+    }
+    try {
+      console.error(`[x402] Approving ${token} on ${network} (${type})...`);
+      const result = await approveToken(type, token, network, {
+        tronPrivateKey: tronKey,
+        evmPrivateKey: evmKey,
+        tronGridApiKey: apiKey,
+      });
+      console.error(`[x402] Approval ${result ? "successful" : "not needed (already approved)"}.`);
+      process.stdout.write(JSON.stringify({ approved: result }, null, 2) + "\n");
+    } catch (e: any) {
+      console.error(`[x402] Error: ${e.message}`);
+      process.exit(1);
     }
     process.exit(0);
   }

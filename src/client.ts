@@ -147,3 +147,64 @@ export async function invokeEndpoint(
     body,
   };
 }
+
+/**
+ * Check token allowance for the current wallet.
+ *
+ * Usage:
+ * ```ts
+ * const allowance = await checkAllowance("evm", "0x55d3...7955", "eip155:56");
+ * console.log(`Current allowance: ${allowance}`);
+ * ```
+ */
+export async function checkAllowance(
+  type: "tron" | "evm",
+  token: string,
+  network: string,
+  options: CreateClientOptions = {},
+): Promise<bigint> {
+  const { TronClientSigner, EvmClientSigner } = await import("@springmint/x402");
+
+  const key = type === "tron"
+    ? (options.tronPrivateKey ?? await findPrivateKey("tron"))
+    : (options.evmPrivateKey ?? await findPrivateKey("evm"));
+
+  if (!key) throw new Error(`No ${type.toUpperCase()} private key found.`);
+
+  const apiKey = options.tronGridApiKey ?? (await findApiKey());
+  if (apiKey) process.env.TRON_GRID_API_KEY = apiKey;
+
+  const signer = type === "tron" ? new TronClientSigner(key) : new EvmClientSigner(key);
+  return signer.checkAllowance(token, BigInt(0), network);
+}
+
+/**
+ * Approve token spending for x402 payments. Calls `ensureAllowance` on the signer.
+ *
+ * Usage:
+ * ```ts
+ * await approveToken("evm", "0x55d3...7955", "eip155:56");
+ * ```
+ */
+export async function approveToken(
+  type: "tron" | "evm",
+  token: string,
+  network: string,
+  options: CreateClientOptions = {},
+): Promise<boolean> {
+  const { TronClientSigner, EvmClientSigner } = await import("@springmint/x402");
+
+  const key = type === "tron"
+    ? (options.tronPrivateKey ?? await findPrivateKey("tron"))
+    : (options.evmPrivateKey ?? await findPrivateKey("evm"));
+
+  if (!key) throw new Error(`No ${type.toUpperCase()} private key found.`);
+
+  const apiKey = options.tronGridApiKey ?? (await findApiKey());
+  if (apiKey) process.env.TRON_GRID_API_KEY = apiKey;
+
+  const signer = type === "tron" ? new TronClientSigner(key) : new EvmClientSigner(key);
+  // Use max uint256 for unlimited approval
+  const maxAmount = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+  return signer.ensureAllowance(token, maxAmount, network, "auto");
+}

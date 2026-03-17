@@ -7,7 +7,7 @@ compatibility:
   tools:
     - x402_invoke
 metadata:
-  version: 1.0.1
+  version: 1.0.2
   author: cppay.finance
   homepage: https://x402.org
   tags: [crypto, payments, x402, agents, api, usdt, usdd, usdc, tron, ethereum, evm, erc20, trc20, sdk]
@@ -146,7 +146,23 @@ If the endpoint returns an image or binary data (CLI mode only):
 
 ### Insufficient Allowance
 
-If allowance is insufficient, the tool will automatically attempt an "infinite approval" transaction. Ensure you have native tokens (TRX or BNB/ETH) for gas.
+If you get an allowance error, approve the token first:
+
+```bash
+# Check current allowance
+npx @springmint/x402-payment --allowance --token <TOKEN_ADDRESS> --network <NETWORK>
+
+# Approve token spending
+npx @springmint/x402-payment --approve --token <TOKEN_ADDRESS> --network <NETWORK>
+```
+
+Or in code:
+```ts
+import { approveToken } from "@springmint/x402-payment";
+await approveToken("evm", "0x55d3...7955", "eip155:97");
+```
+
+Ensure you have native tokens (TRX or BNB/ETH) for gas.
 
 ### Insufficient Balance
 

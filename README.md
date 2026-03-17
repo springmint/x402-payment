@@ -148,8 +148,26 @@ npx @springmint/x402-payment \
 | `--input` | No | JSON request body |
 | `--method` | No | HTTP method (default: GET for direct, POST for entrypoint) |
 | `--check` | No | Verify wallet configuration and exit |
+| `--approve` | No | Approve token spending (requires `--token` and `--network`) |
+| `--allowance` | No | Check current token allowance (requires `--token` and `--network`) |
+| `--token` | No | Token contract address (used with `--approve` / `--allowance`) |
+| `--network` | No | Network identifier, e.g. `eip155:97`, `tron:nile` (used with `--approve` / `--allowance`) |
+| `--type` | No | Chain type: `evm` (default) or `tron` (used with `--approve` / `--allowance`) |
 
 Output goes to **stdout** as JSON. Logs go to **stderr**.
+
+**Token approval examples:**
+
+```bash
+# Check USDT allowance on BSC testnet
+npx @springmint/x402-payment --allowance --token 0x337610d27c682E347C9cD60BD4b3b107C9d34dDd --network eip155:97
+
+# Approve USDT on BSC testnet
+npx @springmint/x402-payment --approve --token 0x337610d27c682E347C9cD60BD4b3b107C9d34dDd --network eip155:97
+
+# Approve USDT on TRON nile
+npx @springmint/x402-payment --approve --token TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf --network tron:nile --type tron
+```
 
 ## API Reference
 
@@ -190,6 +208,23 @@ Search for a private key following the lookup order described in [Wallet Configu
 
 Search for TronGrid API key using the same lookup order.
 
+### `checkAllowance(type, token, network, options?)`
+
+Check current token allowance for the wallet.
+
+```ts
+const allowance = await checkAllowance("evm", "0x55d3...7955", "eip155:56");
+console.log(`Allowance: ${allowance}`);
+```
+
+### `approveToken(type, token, network, options?)`
+
+Approve unlimited token spending for x402 payments.
+
+```ts
+await approveToken("evm", "0x55d3...7955", "eip155:56");
+```
+
 ## Supported Networks & Tokens
 
 | Chain    | Network       | Tokens           | Example USDT Contract |
@@ -201,32 +236,104 @@ Search for TronGrid API key using the same lookup order.
 
 Both **direct transfer** and **permit-based** payment mechanisms are supported on all chains.
 
-## For AI Agent Skill Developers
+## Create Your Own Skill with x402 Payment
 
-If you're building a skill that calls a paid API, add this package as a dependency:
+If you have a paid API protected by x402, you can create a skill file so AI agents can call it automatically.
 
-```bash
-npm install @springmint/x402-payment
-```
+### Step 1: Create SKILL.md
 
-Then in your skill's code:
+Create a `SKILL.md` file for your API:
 
-```ts
+```markdown
+---
+name: my-api-skill
+description: "Description of your API and when to use it."
+version: 1.0.0
+dependencies:
+  - "@springmint/x402-payment"
+---
+
+# My API Skill
+
+> **Prerequisites**: Install and configure `@springmint/x402-payment`.
+> See [wallet configuration](https://github.com/springmint/x402-payment#wallet-configuration).
+>
+> ```bash
+> npm install @springmint/x402-payment
+> npx @springmint/x402-payment --check
+> ```
+
+## Endpoint
+
+\`\`\`
+POST https://your-api.com/api/your-endpoint
+Content-Type: application/json
+\`\`\`
+
+## Using with x402-payment
+
+### CLI (AI Agent)
+
+\`\`\`bash
+npx @springmint/x402-payment \
+  --url https://your-api.com/api/your-endpoint \
+  --method POST \
+  --input '{"key": "value"}'
+\`\`\`
+
+### Library (Node.js)
+
+\`\`\`ts
 import { createX402FetchClient } from "@springmint/x402-payment";
 
 const client = await createX402FetchClient();
-const res = await client.request("https://your-paid-api.com/endpoint", {
+const response = await client.request("https://your-api.com/api/your-endpoint", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ /* your request */ }),
+  body: JSON.stringify({ key: "value" }),
 });
+const data = await response.json();
+\`\`\`
+
+## Request / Response
+
+[Document your API parameters and response format here]
+
+## Error Handling
+
+### Insufficient Allowance
+
+\`\`\`bash
+npx @springmint/x402-payment --approve --token <TOKEN_ADDRESS> --network <NETWORK>
+\`\`\`
 ```
 
-And in your skill's `SKILL.md`, declare the dependency:
+### Step 2: Agent Workflow
 
-```yaml
-dependencies:
-  - x402-payment
+When an AI agent receives your skill, the complete flow is:
+
+```
+1. Agent reads SKILL.md
+       │
+2. Checks if @springmint/x402-payment is installed
+   └─ If not: runs `npm install @springmint/x402-payment`
+       │
+3. Verifies wallet: `npx @springmint/x402-payment --check`
+   └─ If no wallet: asks user to configure private key
+       │
+4. Calls your API via CLI or library
+       │
+5. Gets 402 → SDK auto-pays → gets result
+       │
+6. If allowance error: runs --approve, then retries
+```
+
+### Step 3: Publish
+
+Put your `SKILL.md` in a git repository. AI agents can use it by reading the file:
+
+```
+Read my-api-skill/SKILL.md and call the API with {"key": "value"}
 ```
 
 See [cpbox-skills/batch-balance](https://github.com/springmint/cpbox-skills) for a real-world example.

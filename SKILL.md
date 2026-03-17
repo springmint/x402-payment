@@ -7,7 +7,7 @@ compatibility:
   tools:
     - x402_invoke
 metadata:
-  version: 1.0.0
+  version: 1.0.1
   author: cppay.finance
   homepage: https://x402.org
   tags: [crypto, payments, x402, agents, api, usdt, usdd, usdc, tron, ethereum, evm, erc20, trc20, sdk]

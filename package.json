@@ -1,6 +1,6 @@
 {
   "name": "@springmint/x402-payment",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "x402 payment SDK - Add x402 pay-per-use capability to your AI agent skills and Node.js applications",
   "license": "MIT",
   "type": "module",
@@ -54,8 +54,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@springmint/x402": "^0.1.2",
+    "@springmint/x402": "^0.1.3",
     "tronweb": "^6.0.0",
     "viem": "^2.46.3"
-  }
+  },
+  "packageManager": "yarn@4.13.0"
 }

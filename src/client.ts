@@ -24,8 +24,8 @@ export async function createX402Client(options: CreateClientOptions = {}) {
     X402Client,
     ExactTronClientMechanism,
     ExactEvmClientMechanism,
-    ExactPermitTronClientMechanism,
-    ExactPermitEvmClientMechanism,
+    Permit402EvmClientMechanism,
+    Permit402TronClientMechanism,
     SufficientBalancePolicy,
   } = await import("@springmint/x402");
 
@@ -45,7 +45,7 @@ export async function createX402Client(options: CreateClientOptions = {}) {
     for (const net of networks) {
       const networkId = net === "*" ? "tron:*" : `tron:${net}`;
       client.register(networkId, new ExactTronClientMechanism(signer));
-      client.register(networkId, new ExactPermitTronClientMechanism(signer));
+      client.register(networkId, new Permit402TronClientMechanism(signer));
     }
     log("TRON mechanisms enabled.");
   }
@@ -53,7 +53,7 @@ export async function createX402Client(options: CreateClientOptions = {}) {
   if (evmKey) {
     const signer = new EvmClientSigner(evmKey);
     client.register("eip155:*", new ExactEvmClientMechanism(signer));
-    client.register("eip155:*", new ExactPermitEvmClientMechanism(signer));
+    client.register("eip155:*", new Permit402EvmClientMechanism(signer));
     log("EVM mechanisms enabled.");
   }
 
@@ -165,9 +165,10 @@ export async function checkAllowance(
 ): Promise<bigint> {
   const { TronClientSigner, EvmClientSigner } = await import("@springmint/x402");
 
-  const key = type === "tron"
-    ? (options.tronPrivateKey ?? await findPrivateKey("tron"))
-    : (options.evmPrivateKey ?? await findPrivateKey("evm"));
+  const key =
+    type === "tron"
+      ? (options.tronPrivateKey ?? (await findPrivateKey("tron")))
+      : (options.evmPrivateKey ?? (await findPrivateKey("evm")));
 
   if (!key) throw new Error(`No ${type.toUpperCase()} private key found.`);
 
@@ -194,9 +195,10 @@ export async function approveToken(
 ): Promise<boolean> {
   const { TronClientSigner, EvmClientSigner } = await import("@springmint/x402");
 
-  const key = type === "tron"
-    ? (options.tronPrivateKey ?? await findPrivateKey("tron"))
-    : (options.evmPrivateKey ?? await findPrivateKey("evm"));
+  const key =
+    type === "tron"
+      ? (options.tronPrivateKey ?? (await findPrivateKey("tron")))
+      : (options.evmPrivateKey ?? (await findPrivateKey("evm")));
 
   if (!key) throw new Error(`No ${type.toUpperCase()} private key found.`);
 
